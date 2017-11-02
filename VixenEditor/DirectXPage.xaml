@@ -1,0 +1,65 @@
+﻿<Page
+    x:Class="VixenEditor.DirectXPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:VixenEditor"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" Loaded="Page_Loaded" Unloaded="Page_Unloaded">
+
+    <SwapChainPanel x:Name="swapChainPanel">
+        <TextBlock Text="VixenEditor"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Top"
+               FontSize="30" />
+
+        <Grid x:Name="ButtonsLayout" 
+              Width="400px" 
+              HorizontalAlignment="Left" 
+              VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="SnapXPosButton" 
+                    Grid.Row="0" Grid.Column="0"
+                    Width="auto"
+                    Content="Snap X+" Click="SnapXPosButton_Click"/>
+            <Button x:Name="SnapXNegButton" 
+                    Grid.Row="0" Grid.Column="1"
+                    Width="auto"
+                    Content="Snap X-" Click="SnapXNegButton_Click"/>
+            <Button x:Name="SnapYPosButton" 
+                    Grid.Row="1" Grid.Column="0"
+                    Width="auto"
+                    Content="Snap Y+" Click="SnapYPosButton_Click"/>
+            <Button x:Name="SnapYNegButton" 
+                    Grid.Row="1" Grid.Column="1"
+                    Width="auto"
+                    Content="Snap Y-" Click="SnapYNegButton_Click"/>
+            <Button x:Name="SnapZPosButton" 
+                    Grid.Row="2" Grid.Column="0"
+                    Width="auto"
+                    Content="Snap Z+" Click="SnapZPosButton_Click"/>
+            <Button x:Name="SnapZNegButton" 
+                    Grid.Row="2" Grid.Column="1"
+                    Width="auto"
+                    Content="Snap Z-" Click="SnapZNegButton_Click"/>
+        </Grid>
+    </SwapChainPanel>
+
+  <Page.BottomAppBar>
+    <AppBar x:Name="bottomAppBar" Padding="10,0,10,0">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+        <AppBarButton AutomationProperties.Name="Sample Button"
+                      AutomationProperties.AutomationId="SampleAppBarButton"
+                      Click="AppBarButton_Click"/>
+      </StackPanel>
+    </AppBar>
+  </Page.BottomAppBar>
+</Page>
