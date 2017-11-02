@@ -80,7 +80,7 @@ void Camera::snapToAxis(Axis axis, Direction dir) {
 
   eye = center - offset;
   XMStoreFloat4x4(&(this->m_data.look_at_matrix),
-                  XMMatrixTranspose(XMMatrixLookAtRH(eye, center, up)));
+                  XMMatrixLookAtLH(eye, center, up));
   XMStoreFloat4(&(this->m_data.eye), eye);
   XMStoreFloat4(&(this->m_data.up), up);
 }
@@ -123,8 +123,7 @@ void Camera::setOrientation(XMFLOAT4X4 orientation) {
 	XMMATRIX perspective_matrix = XMLoadFloat4x4(&(this->m_data.perspective_matrix));
 	XMMATRIX orientation_matrix = XMLoadFloat4x4(&orientation);
 
-	XMStoreFloat4x4(&(this->m_data.projection_matrix),
-                  XMMatrixTranspose(perspective_matrix * orientation_matrix));
+	XMStoreFloat4x4(&(this->m_data.projection_matrix), perspective_matrix);//  orientation_matrix));
 }
 
 }

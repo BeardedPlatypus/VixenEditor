@@ -29,6 +29,8 @@ struct CameraData {
   // -------------------------------------------------------------------------
   // Methods
   // -------------------------------------------------------------------------
+  void recalculateLookAtMatrix();
+
   /// <summary> 
   /// Recalculate the perspective matrix based on the current fields
   /// </summary>

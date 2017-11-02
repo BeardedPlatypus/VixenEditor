@@ -19,9 +19,9 @@ SystemWarden::SystemWarden(std::shared_ptr<VixCommon::DeviceResources> device_re
 
   if (aspect_ratio < 1.0f) fov_angle_y *= 2.0f;
 
-  DirectX::XMFLOAT4 eye = { 0.0f,  0.7f, 3.5f, 0.0f };
-  DirectX::XMFLOAT4 at  = { 0.0f, -0.1f, 0.0f, 0.0f };
-  DirectX::XMFLOAT4 up  = { 0.0f,  1.0f, 0.0f, 0.0f };
+  DirectX::XMFLOAT4 eye = { 0.0f,  0.0f,  -10.0f, 0.0f };
+  DirectX::XMFLOAT4 at  = { 0.0f, -0.5f,  0.0f, 0.0f };
+  DirectX::XMFLOAT4 up  = { 0.0f,  1.0f,  0.0f, 0.0f };
 
   this->p_camera = std::make_unique<VixLib::camera::Camera>(
     std::make_unique<VixLib::camera::transform::Translate>(280.0f),

@@ -86,14 +86,14 @@ void Renderer::createDeviceDependentResources() {
 	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
 		// Load mesh vertices. Each vertex has a position and a color.
 		static const VertexPositionColor cubeVertices[] = {
-			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
-			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
-			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
-			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
+			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
+			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
+			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
+			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
+			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
+			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
+			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
 		};
 
 		D3D11_SUBRESOURCE_DATA vertex_buffer_data = {0};
@@ -222,8 +222,12 @@ void Renderer::render() {
   //CameraCB cb = { this->m_camera_cb_data.model,
   //                look_at, //this->m_camera_cb_data.view, 
   //                this->m_camera_data.projection_matrix };
-  this->m_camera_cb_data.view = this->m_camera_data.look_at_matrix; //look_at;
-  this->m_camera_cb_data.projection = this->m_camera_data.projection_matrix;
+  //DirectX::XMStoreFloat4x4(&this->m_camera_cb_data.view, DirectX::XMMatrixTranspose(DirectX::XMLoadFLoat4x4(this->m_camera_data.look_at_matrix)));
+  XMStoreFloat4x4(&this->m_camera_cb_data.view,       XMMatrixTranspose(XMLoadFloat4x4(&this->m_camera_data.look_at_matrix)));
+  XMStoreFloat4x4(&this->m_camera_cb_data.projection, XMMatrixTranspose(XMLoadFloat4x4(&this->m_camera_data.projection_matrix)));
+
+  //this->m_camera_cb_data.view = this->m_camera_data.look_at_matrix; //look_at;
+  //this->m_camera_cb_data.projection = this->m_camera_data.projection_matrix;
 
   context->UpdateSubresource1(this->m_camera_cb.Get(),
                               0,
