@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="VixLib.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="src\camera\Camera.cpp" />
+    <ClCompile Include="src\camera\CameraData.cpp" />
+    <ClCompile Include="src\camera\transforms\Rotate.cpp" />
+    <ClCompile Include="src\camera\transforms\Translate.cpp" />
+    <ClCompile Include="src\camera\transforms\Zoom.cpp" />
+    <ClCompile Include="src\renderer\Renderer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="VixLib.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="include\camera\Camera.h" />
+    <ClInclude Include="include\camera\CameraData.h" />
+    <ClInclude Include="include\camera\transforms\Translate.h" />
+    <ClInclude Include="include\camera\transforms\Rotate.h" />
+    <ClInclude Include="include\camera\transforms\Zoom.h" />
+    <ClInclude Include="include\renderer\Renderer.h" />
+    <ClInclude Include="include\renderer\shaders\ShaderStructures.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="include\renderer\shaders\VertexShader.hlsl" />
+    <FxCompile Include="include\renderer\shaders\PixelShader.hlsl" />
+  </ItemGroup>
+</Project>
