@@ -29,15 +29,24 @@ void TurnTableRotate::rotate(CameraData& data, float dx, float dy) const {
     DirectX::XMMatrixRotationAxis(world_y_axis, angle_y) *
     DirectX::XMMatrixRotationAxis(camera_x_axis, angle_x);
 
-  // update LookAt matrix
-  look_at = rotation * look_at;
-
-  // update vectors
   DirectX::XMVECTOR up =  DirectX::XMLoadFloat4(&(data.up));
   DirectX::XMVECTOR eye = DirectX::XMLoadFloat4(&(data.eye));
+  DirectX::XMVECTOR center = DirectX::XMLoadFloat4(&(data.center));
 
   up =  DirectX::XMVector4Transform(up,  rotation);
   eye = DirectX::XMVector4Transform(eye, rotation);
+
+  DirectX::XMVECTOR rot_center = DirectX::XMVector4Transform(center, rotation);
+
+  DirectX::XMMATRIX translation =
+    DirectX::XMMatrixTranslationFromVector(DirectX::XMVectorSubtract(rot_center,
+                                                                     center));
+
+  // update LookAt matrix
+  look_at = translation * rotation * look_at;
+
+  // update vectors
+
 
   DirectX::XMStoreFloat4x4(&data.look_at_matrix, look_at);
   DirectX::XMStoreFloat4(&(data.up),  up);
