@@ -27,10 +27,17 @@ Renderer::Renderer(const std::shared_ptr<VixCommon::DeviceResources>& device_res
 
   // TODO fix this with object setting
   // Set model matrix up
+  /*
   XMStoreFloat4x4(&(this->m_camera_cb_data.model),
                   XMMatrixIdentity());
+  */
 
-  this->m_camera_cb_data.view = this->m_camera_data.look_at_matrix; //look_at;
+  this->m_camera_cb_data.model_view = this->m_camera_data.look_at_matrix; //look_at;
+
+  XMStoreFloat4x4(&(this->m_camera_cb_data.inv_transpose_model_view),
+    XMMatrixTranspose(XMMatrixInverse(nullptr, 
+                                      XMLoadFloat4x4(&this->m_camera_data.look_at_matrix))));
+  this->m_camera_cb_data.inv_transpose_model_view = 
   this->m_camera_cb_data.projection = this->m_camera_data.projection_matrix;
 }
 
@@ -41,6 +48,7 @@ void Renderer::createDeviceDependentResources() {
 	auto loadPSTask = DX::ReadDataAsync(L"VixLib\\PixelShader.cso");
   
 	// After the vertex shader file is loaded, create the shader, input layout and buffers.
+  // -------------------------------------------------------------------------------------
 	auto createVSTask = loadVSTask.then([this](const std::vector<byte>& file_data) {
 		DX::ThrowIfFailed(this->m_device_resources->getD3DDevice()->CreateVertexShader(
       &file_data[0],
@@ -51,7 +59,7 @@ void Renderer::createDeviceDependentResources() {
     // Specify the layout of the input element
 		static const D3D11_INPUT_ELEMENT_DESC vertex_desc [] = {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
     // Set up the layout
@@ -62,8 +70,17 @@ void Renderer::createDeviceDependentResources() {
       file_data.size(),
       &(this->m_input_layout)));
 
+    // Create the relevant buffers
+		CD3D11_BUFFER_DESC camera_cb_desc(sizeof(CameraCB) , D3D11_BIND_CONSTANT_BUFFER);
+		DX::ThrowIfFailed(
+      this->m_device_resources->getD3DDevice()->CreateBuffer(
+        &camera_cb_desc,
+        nullptr,
+        &(this->m_camera_cb)));
 	});
 
+  // Pixel Shader
+  // -------------------------------------------------------------------------------------
 	auto createPSTask = loadPSTask.then([this](const std::vector<byte>& file_data) {
 		DX::ThrowIfFailed(
 			this->m_device_resources->getD3DDevice()->CreatePixelShader(
@@ -72,20 +89,62 @@ void Renderer::createDeviceDependentResources() {
 				nullptr,
 				&(this->m_pixel_shader)));
 
-    // Create the relevant buffers
-		CD3D11_BUFFER_DESC camera_cb_desc(sizeof(CameraCB) , D3D11_BIND_CONSTANT_BUFFER);
-		DX::ThrowIfFailed(
+    // build lighting
+    CD3D11_BUFFER_DESC lighting_cb_desc(sizeof(LightingCB), D3D11_BIND_CONSTANT_BUFFER);
+    DX::ThrowIfFailed(
       this->m_device_resources->getD3DDevice()->CreateBuffer(
-        &camera_cb_desc,
+        &lighting_cb_desc,
         nullptr,
-        &(this->m_camera_cb)));
-
+        &(this->m_lighting_cb)));
 	});
 
 	// Once both shaders are loaded, create the mesh.
+  // -------------------------------------------------------------------------------------
 	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
 		// Load mesh vertices. Each vertex has a position and a color.
 		static const VertexPositionColor cubeVertices[] = {
+      // -x
+      // ----------------------------------------------------------
+			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
+      // +x
+      // ----------------------------------------------------------
+			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
+
+      // -y
+      // ----------------------------------------------------------
+			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
+			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
+			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
+			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
+
+      // +y
+      // ----------------------------------------------------------
+			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
+			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
+			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
+			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
+
+      // -z
+      // ----------------------------------------------------------
+			{XMFLOAT3(-0.5f,  0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
+			{XMFLOAT3(-0.5f, -0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
+			{XMFLOAT3( 0.5f,  0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
+			{XMFLOAT3( 0.5f, -0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
+
+      // +z
+      // ----------------------------------------------------------
+			{XMFLOAT3(-0.5f, -0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
+			{XMFLOAT3(-0.5f,  0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
+			{XMFLOAT3( 0.5f, -0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
+			{XMFLOAT3( 0.5f,  0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
+
+      /*
 			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
 			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
 			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
@@ -94,6 +153,7 @@ void Renderer::createDeviceDependentResources() {
 			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
 			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
 			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
+      */
 		};
 
 		D3D11_SUBRESOURCE_DATA vertex_buffer_data = {0};
@@ -113,6 +173,24 @@ void Renderer::createDeviceDependentResources() {
 		// 0, 2 and 1 from the vertex buffer compose the 
 		// first triangle of this mesh.
 		static const unsigned short cubeIndices [] = {
+      0, 2, 1,
+      1, 2, 3, // -x
+
+      4, 5, 6,
+      5, 7, 6, // +x
+
+      9, 10, 8,
+      11, 10, 9, // -y
+
+      12, 14, 13,
+      13, 14, 15, // +y
+
+      16, 18, 17,
+      17, 18, 19, // -z
+
+      23, 21, 20, // +z
+      22, 23, 20,
+      /*
 			0,2,1, // -x
 			1,2,3,
 
@@ -124,12 +202,15 @@ void Renderer::createDeviceDependentResources() {
 
 			2,6,7, // +y
 			2,7,3,
+      */
 
+      /*
 			0,4,6, // -z
 			0,6,2,
 
 			1,3,7, // +z
 			1,7,5,
+      */
 		};
 
 		this->m_index_count = ARRAYSIZE(cubeIndices);
@@ -156,78 +237,11 @@ void Renderer::render() {
 
 	auto context = this->m_device_resources->getD3DDeviceContext();
 
-  // Update Camera Model if necessary
-  //bool needs_update = false;
-
-  /*
-  //if (!matrixEquals(this->m_camera_data.look_at_matrix, 
-  //                  this->m_camera_cb_data.view)) {
-    needs_update = true;
-    this->m_camera_cb_data.view = this->m_camera_data.look_at_matrix;
-  //}
-    XMFLOAT4X4 model;
-    XMStoreFloat4x4(&model,
-                    XMMatrixIdentity());
-   
-    XMFLOAT4X4 model2;
-    XMStoreFloat4x4(&model2,
-                    XMMatrixIdentity());
-
-    float radiansPerSecond = XMConvertToRadians(45);
-    double totalRotation = 1 * radiansPerSecond;
-    float radians = static_cast<float>(fmod(totalRotation, DirectX::XM_2PI));
-
-    XMStoreFloat4x4(&model2, XMMatrixTranspose(XMMatrixRotationY(radians)));
-
-    XMFLOAT4X4 view = this->m_camera_data.look_at_matrix;
-    XMFLOAT4X4 projection = this->m_camera_data.projection_matrix;
-
-  //if (!matrixEquals(this->m_camera_data.projection_matrix, 
-  //                  this->m_camera_cb_data.projection)) {
-    needs_update = true;
-    this->m_camera_cb_data.projection = this->m_camera_data.projection_matrix;
-  //}
-
-    XMFLOAT4X4 look_at;
-
-    XMStoreFloat4x4(&look_at, 
-                    XMMatrixTranspose(XMMatrixLookAtRH(this->m_camera_data.eye, 
-                                                       this->m_camera_data.center, 
-                                                       this->m_camera_data.up)));
-    //static const XMVECTORF32 eye = { 0.0f, 0.7f, 1.5f, 0.0f };
-    //static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
-    //static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
-
-    //XMStoreFloat4x4(&look_at, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
-
-    CameraCB cb = { model, view, projection };
-    */
-
-  //XMFLOAT4X4 model;
-  //XMStoreFloat4x4(&model,
-  //                XMMatrixIdentity());
-
-   // XMFLOAT4X4 look_at;
-
-    //XMStoreFloat4x4(&look_at, 
-    //                XMMatrixTranspose(XMMatrixLookAtRH(this->m_camera_data.eye, 
-    //                                                   this->m_camera_data.center, 
-    //                                                   this->m_camera_data.up)));
-
-    //static const XMVECTORF32 eye = { 0.0f, 0.7f, 1.5f, 0.0f };
-    //static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
-    //static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
-
-    //XMStoreFloat4x4(&look_at, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
-  //CameraCB cb = { this->m_camera_cb_data.model,
-  //                look_at, //this->m_camera_cb_data.view, 
-  //                this->m_camera_data.projection_matrix };
-  //DirectX::XMStoreFloat4x4(&this->m_camera_cb_data.view, DirectX::XMMatrixTranspose(DirectX::XMLoadFLoat4x4(this->m_camera_data.look_at_matrix)));
-  XMStoreFloat4x4(&this->m_camera_cb_data.view,       XMMatrixTranspose(XMLoadFloat4x4(&this->m_camera_data.look_at_matrix)));
+  XMStoreFloat4x4(&this->m_camera_cb_data.model_view,       
+                  XMMatrixTranspose(XMLoadFloat4x4(&this->m_camera_data.look_at_matrix)));
+  XMStoreFloat4x4(&this->m_camera_cb_data.inv_transpose_model_view,
+                 XMMatrixInverse(nullptr, XMLoadFloat4x4(&this->m_camera_data.look_at_matrix)));
   XMStoreFloat4x4(&this->m_camera_cb_data.projection, XMMatrixTranspose(XMLoadFloat4x4(&this->m_camera_data.projection_matrix)));
-
-  //this->m_camera_cb_data.view = this->m_camera_data.look_at_matrix; //look_at;
-  //this->m_camera_cb_data.projection = this->m_camera_data.projection_matrix;
 
   context->UpdateSubresource1(this->m_camera_cb.Get(),
                               0,
@@ -237,6 +251,24 @@ void Renderer::render() {
                               0,
                               0,
                               0);
+
+  // -----------------------------------------------------------------
+  /*
+  XMVECTOR light_pos;
+  XMVECTORF32 floatingVector = { -1.0f, 2.0f, -5.0f, 1.f };
+  XMMATRIX look_at = XMLoadFloat4x4(&this->m_camera_data.look_at_matrix);
+  light_pos = XMVector4Transform( floatingVector, look_at);
+
+  XMStoreFloat4(&this->m_lighting_cb_data.pos, light_pos);
+  */
+  //this->m_lighting_cb_data.pos = XMFLOAT4(0.5f, -0.5f, 0.0f, 1.f);
+  //this->m_lighting_cb_data.pos = XMFLOAT4(-1.607f, 1.71f, 0.3015f, 1.f);
+
+  context->UpdateSubresource1(this->m_lighting_cb.Get(),
+                              0,
+                              NULL,
+                              &(this->m_lighting_cb_data),
+                              0, 0, 0);
 
 	// Each vertex is one instance of the VertexPositionColor struct.
 	UINT stride = sizeof(VertexPositionColor);
@@ -267,12 +299,17 @@ void Renderer::render() {
                                  this->m_camera_cb.GetAddressOf(),
                                  nullptr,
                                  nullptr);
-  //}
 
 	// Attach our pixel shader.
 	context->PSSetShader(this->m_pixel_shader.Get(),
                        nullptr,
                        0);
+
+  context->PSSetConstantBuffers1(0,
+                                 1,
+                                 this->m_lighting_cb.GetAddressOf(),
+                                 nullptr,
+                                 nullptr);
 
 	// Draw the objects.
 	context->DrawIndexed(this->m_index_count,
@@ -289,6 +326,7 @@ void Renderer::releaseDeviceDependentResources() {
 	this->m_camera_cb.Reset();
 	this->m_vertex_buffer.Reset();
 	this->m_index_buffer.Reset();
+  this->m_lighting_cb.Reset();
 }
 
 

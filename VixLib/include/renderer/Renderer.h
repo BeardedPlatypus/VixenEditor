@@ -30,10 +30,12 @@ private:
   
   // Constant buffers
   Microsoft::WRL::ComPtr<ID3D11Buffer>		    m_camera_cb;
+  Microsoft::WRL::ComPtr<ID3D11Buffer>		    m_lighting_cb;
 
   uint32 m_index_count;
 
-  CameraCB m_camera_cb_data;
+  CameraCB   m_camera_cb_data;
+  LightingCB m_lighting_cb_data;
 
   const camera::CameraData& m_camera_data;
 
