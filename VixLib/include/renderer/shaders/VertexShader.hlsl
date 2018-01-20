@@ -14,6 +14,7 @@ cbuffer CameraCB : register(b0) {
 struct VertexShaderInput {
   float3 pos    : POSITION;
   float3 normal : NORMAL0;
+  float3 color  : COLOR0;
 };
 
 
@@ -21,6 +22,7 @@ struct PixelShaderInput {
   float4 pos    : SV_POSITION;
   float4 camera_pos : POSITION0;
   float3 normal : NORMAL0;
+  float3 color : COLOR0;
 };
 
 
@@ -42,6 +44,7 @@ PixelShaderInput main(VertexShaderInput input) {
   float4 normal = float4(input.normal, 0.0f);
   normal = mul(normal, inv_transpose_model_view);
   output.normal = normal;
+  output.color = input.color; //float3(1.0f, 1.0f, 1.0f);
 
 	return output;
 }

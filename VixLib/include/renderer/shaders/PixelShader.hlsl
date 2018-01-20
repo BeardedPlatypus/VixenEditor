@@ -3,6 +3,7 @@ struct PixelShaderInput {
   float4 pos : SV_POSITION;
   float4 camera_pos : POSITION0;
   float3 normal : NORMAL0;
+  float3 color : COLOR0;
 };
 
 
@@ -36,6 +37,6 @@ float4 main(PixelShaderInput input) : SV_TARGET{
                     0.350 * fill_angular_incidence; + // fill light
                     0.250 * back_angular_incidence;   // backlight
                     
-
-  return float4(light_val, light_val, light_val, 1.0f);
+  float3 col = input.color * light_val;
+  return float4(col, 1.0f);
 }
