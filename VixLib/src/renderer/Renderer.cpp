@@ -58,8 +58,9 @@ void Renderer::createDeviceDependentResources() {
 
     // Specify the layout of the input element
 		static const D3D11_INPUT_ELEMENT_DESC vertex_desc [] = {
-			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-			{ "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+      { "COLOR",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		};
 
     // Set up the layout
@@ -102,47 +103,47 @@ void Renderer::createDeviceDependentResources() {
   // -------------------------------------------------------------------------------------
 	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
 		// Load mesh vertices. Each vertex has a position and a color.
-		static const VertexPositionColor cubeVertices[] = {
+		static const VertexPositionNormalColor cubeVertices[] = {
       // -x
       // ----------------------------------------------------------
-			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f)},
+      {XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
       // +x
       // ----------------------------------------------------------
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f)},
+			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(+1.0f, 0.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
 
       // -y
       // ----------------------------------------------------------
-			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
-			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f)},
+			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
 
       // +y
       // ----------------------------------------------------------
-			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
-			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f)},
+			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f,  +1.0f, 0.0f), XMFLOAT3(1.0, 1.0, 1.0)},
 
       // -z
       // ----------------------------------------------------------
-			{XMFLOAT3(-0.5f,  0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
-			{XMFLOAT3(-0.5f, -0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f)},
+			{XMFLOAT3(-0.5f,  0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3(-0.5f, -0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f,  0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f, -0.5f,  -0.5f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
 
       // +z
       // ----------------------------------------------------------
-			{XMFLOAT3(-0.5f, -0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
-			{XMFLOAT3(-0.5f,  0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f)},
+			{XMFLOAT3(-0.5f, -0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3(-0.5f,  0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f, -0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
+			{XMFLOAT3( 0.5f,  0.5f, +0.5f), XMFLOAT3(0.0f, 0.0f, +1.0f), XMFLOAT3(1.0, 1.0, 1.0)},
 
       /*
 			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
@@ -271,7 +272,7 @@ void Renderer::render() {
                               0, 0, 0);
 
 	// Each vertex is one instance of the VertexPositionColor struct.
-	UINT stride = sizeof(VertexPositionColor);
+	UINT stride = sizeof(VertexPositionNormalColor);
 	UINT offset = 0;
 	context->IASetVertexBuffers(0,
                               1,
