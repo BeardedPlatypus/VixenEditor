@@ -200,6 +200,21 @@
     <ClInclude Include="include\camera\transforms\Zoom.h" />
     <ClInclude Include="include\renderer\Renderer.h" />
     <ClInclude Include="include\renderer\shaders\ShaderStructures.h" />
+    <ClInclude Include="include\world\object-rep\FlatObjectRep.h" />
+    <ClInclude Include="include\world\object-rep\IObjectRep.h" />
+    <ClInclude Include="include\world\object-view\IObjectView.h" />
+    <ClInclude Include="include\world\object-rep\Node.h" />
+    <ClInclude Include="include\world\object-view\IObjectViewRead.h" />
+    <ClInclude Include="include\world\object-view\naive\NaiveFace.h" />
+    <ClInclude Include="include\world\object-view\naive\NaiveObjectView.h" />
+    <ClInclude Include="include\world\Object.h" />
+    <ClInclude Include="include\world\object-rep\OptionalNode.h" />
+    <ClInclude Include="include\world\selection\NaiveSelection.h" />
+    <ClInclude Include="include\world\selection\VoxelFace.h" />
+    <ClInclude Include="include\world\selection\ISelection.h" />
+    <ClInclude Include="include\world\util\Direction.h" />
+    <ClInclude Include="include\world\util\hash_combine.h" />
+    <ClInclude Include="include\world\util\Position.h" />
     <ClInclude Include="VixLib.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
@@ -211,6 +226,15 @@
     <ClCompile Include="src\camera\transforms\Translate.cpp" />
     <ClCompile Include="src\camera\transforms\Zoom.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
+    <ClCompile Include="src\world\object-rep\FlatObjectRep.cpp" />
+    <ClCompile Include="src\world\object-rep\Node.cpp" />
+    <ClCompile Include="src\world\object-view\naive\NaiveFace.cpp" />
+    <ClCompile Include="src\world\object-view\naive\NaiveObjectView.cpp" />
+    <ClCompile Include="src\world\object-rep\OptionalNode.cpp" />
+    <ClCompile Include="src\world\Object.cpp" />
+    <ClCompile Include="src\world\selection\NaiveSelection.cpp" />
+    <ClCompile Include="src\world\selection\VoxelFace.cpp" />
+    <ClCompile Include="src\world\util\Position.cpp" />
     <ClCompile Include="VixLib.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

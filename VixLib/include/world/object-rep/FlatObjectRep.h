@@ -21,7 +21,7 @@ public:
   //  Constructor | Destructor
   // --------------------------------------------------------------------------
   FlatObjectRep();
-  ~FlatObjectRep();
+  virtual ~FlatObjectRep() override;
 
   // --------------------------------------------------------------------------
   //  IObjectRep methods

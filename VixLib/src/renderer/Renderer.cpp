@@ -103,6 +103,7 @@ void Renderer::createDeviceDependentResources() {
   // -------------------------------------------------------------------------------------
 	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
 		// Load mesh vertices. Each vertex has a position and a color.
+    /*
 		static const VertexPositionNormalColor cubeVertices[] = {
       // -x
       // ----------------------------------------------------------
@@ -155,13 +156,31 @@ void Renderer::createDeviceDependentResources() {
 			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
 			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
       */
-		};
+	  //};
+      
+      // create object
+    std::vector<std::pair<world::Position, DirectX::XMFLOAT3>> nodes = { std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(0, 0, 0), {1.0f, 1.0f, 1.0f})
+                                                                       , std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(0, 1, 0), {0.7f, 1.0f, 0.7f})
+                                                                       , std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(0, 2, 0), {0.5f, 1.0f, 0.5f})
+                                                                       , std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(0, 3, 0), {0.2f, 1.0f, 0.2f})
+                                                                       , std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(1, 0, 0), {0.9f, 0.4f, 0.4f})
+                                                                       , std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(0, 0, 1), {0.9f, 0.4f, 0.4f})
+                                                                       , std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(-1, 0, 0), {0.9f, 0.4f, 0.4f})
+                                                                       , std::make_pair<world::Position, DirectX::XMFLOAT3>(world::Position(0, 0, -1), {0.9f, 0.4f, 0.4f})
+                                                                       };
+    this->m_object = std::make_unique<world::Object>(nodes);
+    const std::vector<VertexPositionNormalColor> object_vertices = this->m_object->queryView().getVertices();
+    const std::vector<unsigned short> object_indices = this->m_object->queryView().getIndices();
 
+    
 		D3D11_SUBRESOURCE_DATA vertex_buffer_data = {0};
-		vertex_buffer_data.pSysMem = cubeVertices;
+    vertex_buffer_data.pSysMem = this->m_object->queryView().getVertices().data(); // object_vertices.data();
+    //vertex_buffer_data.pSysMem = cubeVertices;
 		vertex_buffer_data.SysMemPitch = 0;
 		vertex_buffer_data.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertex_buffer_desc(sizeof(cubeVertices), D3D11_BIND_VERTEX_BUFFER);
+		CD3D11_BUFFER_DESC vertex_buffer_desc(sizeof(VertexPositionNormalColor) * object_vertices.size(), D3D11_BIND_VERTEX_BUFFER);
+		//CD3D11_BUFFER_DESC vertex_buffer_desc(this->m_object->queryView().getVertices().size(), D3D11_BIND_VERTEX_BUFFER);
+		//CD3D11_BUFFER_DESC vertex_buffer_desc(sizeof(cubeVertices), D3D11_BIND_VERTEX_BUFFER);
 		DX::ThrowIfFailed(
 			this->m_device_resources->getD3DDevice()->CreateBuffer(
 				&vertex_buffer_desc,
@@ -173,6 +192,7 @@ void Renderer::createDeviceDependentResources() {
 		// For example: 0,2,1 means that the vertices with indexes
 		// 0, 2 and 1 from the vertex buffer compose the 
 		// first triangle of this mesh.
+    /*
 		static const unsigned short cubeIndices [] = {
       0, 2, 1,
       1, 2, 3, // -x
@@ -212,15 +232,19 @@ void Renderer::createDeviceDependentResources() {
 			1,3,7, // +z
 			1,7,5,
       */
-		};
+		//}; 
 
-		this->m_index_count = ARRAYSIZE(cubeIndices);
+    this->m_index_count = this->m_object->queryView().getIndices().size(); //object_indices.size();  //ARRAYSIZE(cubeIndices);
+    //this->m_index_count = ARRAYSIZE(cubeIndices);
 
 		D3D11_SUBRESOURCE_DATA index_buffer_data = {0};
-		index_buffer_data.pSysMem = cubeIndices;
+		index_buffer_data.pSysMem = this->m_object->queryView().getIndices().data();
+		//index_buffer_data.pSysMem = cubeIndices;
 		index_buffer_data.SysMemPitch = 0;
 		index_buffer_data.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC index_buffer_desc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
+		CD3D11_BUFFER_DESC index_buffer_desc(sizeof(const unsigned short) * this->m_object->queryView().getIndices().size(), D3D11_BIND_INDEX_BUFFER);
+		//CD3D11_BUFFER_DESC index_buffer_desc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
+		//CD3D11_BUFFER_DESC index_buffer_desc(sizeof(const unsigned short) * 36, D3D11_BIND_INDEX_BUFFER);
 		DX::ThrowIfFailed(this->m_device_resources->getD3DDevice()->CreateBuffer(
       &index_buffer_desc,
       &index_buffer_data,

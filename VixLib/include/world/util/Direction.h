@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Direction.h"
-
 namespace VixLib {
 namespace world {
 
@@ -9,7 +7,7 @@ enum class Direction { XNEG, XPOS,
                        YNEG, YPOS, 
                        ZNEG, ZPOS };
 
-inline Position getNeighbourPositionFromDirection(Direction dir) {
+inline Position getRelativeNeighbourPositionFromDirection(Direction dir) {
   switch (dir) {
   case Direction::XNEG: return Position(-1, 0, 0);
   case Direction::XPOS: return Position(+1, 0, 0);
@@ -20,11 +18,9 @@ inline Position getNeighbourPositionFromDirection(Direction dir) {
   }
 }
 
-inline Position getNeighbourPositionFromDirection(Position pos, Direction dir) {
-  return pos + getNeighbourPositionFromDirection(dir);
+inline Position getAbsoluteNeighbourPositionFromPositionAndDirection(Position pos, Direction dir) {
+  return pos + getRelativeNeighbourPositionFromDirection(dir);
 }
-
-
 
 }
 }

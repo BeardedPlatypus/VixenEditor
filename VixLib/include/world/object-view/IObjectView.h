@@ -3,9 +3,9 @@
 // data necessary for rendering an Object with the Renderer
 
 #include "pch.h"
-#include "include/renderer/shaders/ShaderStructures.h"
-#include "include\world\util\Position.h"
-#include "include\world\util\Direction.h"
+#include "IObjectViewRead.h"
+#include "VixLib\include\world\util\Position.h"
+#include "VixLib\include\world\util\Direction.h"
 
 
 namespace VixLib {
@@ -15,13 +15,13 @@ namespace world {
 /// The IObjectView is the interface describing an Object to be used by 
 /// the Renderer.
 /// </summary>
-class IObjectView {
+class IObjectView : public IObjectViewRead {
 public:
   // --------------------------------------------------------------------------
   // Destructor
   // --------------------------------------------------------------------------
   ///<summary> Destruct this IObjectView. </summary>
-  virtual ~IObjectView() = 0;
+  virtual ~IObjectView() {}
 
   // --------------------------------------------------------------------------
   // Getters
@@ -49,6 +49,12 @@ public:
   /// Remove the face at the specified <paramref name='pos'/> and <paramref name='dir'/>.
   /// </summary>
   virtual void removeFace(Position pos, Direction dir) = 0;
+
+  /// <summary>
+  /// Set the colour of the face to the specified colour. 
+  /// </summary>
+  /// <param name='col'> The new colour of the specified face. </param>
+  virtual void setColour(Position pos, Direction dir, DirectX::XMFLOAT3 col) = 0;
 };
 
 }

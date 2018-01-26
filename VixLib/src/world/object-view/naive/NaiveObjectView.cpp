@@ -55,7 +55,9 @@ void NaiveObjectView::addFace(Position pos, Direction dir,
     switch (dir) {
       // -----------------------------------------------
     case Direction::XNEG:
-      v0 = { DirectX::XMFLOAT3(x - 0.5f, y - 0.5f, z + 0.5f),
+      v0 = { DirectX::XMFLOAT3(x - 0.5f, 
+                               y - 0.5f, 
+                               z + 0.5f),
              DirectX::XMFLOAT3(-1.0f,  0.0f,  0.0f),
              col };
       v1 = { DirectX::XMFLOAT3(x - 0.5,
@@ -110,12 +112,12 @@ void NaiveObjectView::addFace(Position pos, Direction dir,
              DirectX::XMFLOAT3(0.0f, -1.0f,  0.0f),
              col };
       v2 = { DirectX::XMFLOAT3(x + 0.5f,
-                               y + 0.5f,
-                               z + 0.5f),
+                               y - 0.5f,
+                               z - 0.5f),
              DirectX::XMFLOAT3(0.0f, -1.0f,  0.0f),
              col };
-      v3 = { DirectX::XMFLOAT3(x + 0.5f,
-                               y + 0.5f,
+      v3 = { DirectX::XMFLOAT3(x - 0.5f,
+                               y - 0.5f,
                                z - 0.5f),
              DirectX::XMFLOAT3(0.0f, -1.0f,  0.0f),
              col };
@@ -137,9 +139,9 @@ void NaiveObjectView::addFace(Position pos, Direction dir,
                                z + 0.5f),
              DirectX::XMFLOAT3(0.0f, +1.0f,  0.0f),
              col };
-      v3 = { DirectX::XMFLOAT3(x + 0.5f,
+      v3 = { DirectX::XMFLOAT3(x - 0.5f,
                                y + 0.5f,
-                               z - 0.5f),
+                               z + 0.5f),
              DirectX::XMFLOAT3(0.0f, +1.0f,  0.0f),
              col };
       break;
@@ -201,7 +203,7 @@ void NaiveObjectView::addFace(Position pos, Direction dir,
     this->indices.push_back(cur_offset_vertices + 3);
     this->indices.push_back(cur_offset_vertices + 2);
 
-    // Adde face
+    // Add face
     NaiveFace* p_face = new NaiveFace(cur_offset_vertices,
                                       cur_offset_indices);
     this->faces.push_back(p_face);
@@ -236,6 +238,10 @@ void NaiveObjectView::removeFace(Position pos, Direction dir) {
       this->indices[face->index_offset + 4] = this->indices[last_face->index_offset + 4];
       this->indices[face->index_offset + 5] = this->indices[last_face->index_offset + 5];
 
+      // replace data at face
+      face->index_offset = last_face->index_offset;
+      face->vert_offset = last_face->vert_offset;
+
       face = last_face;
     }
 
@@ -261,6 +267,18 @@ void NaiveObjectView::removeFace(Position pos, Direction dir) {
     // There exists no face at the specified position
     return;
   }
+}
+
+
+void NaiveObjectView::setColour(Position pos, Direction dir, DirectX::XMFLOAT3 col) {
+  // Retrieve face
+  NaiveFaceKey key = NaiveFaceKey(pos, dir);
+  NaiveFace* p_face = this->face_map.at(key);
+  // Update vertex colours
+  this->vertices[p_face->vert_offset + 0].color = col;
+  this->vertices[p_face->vert_offset + 1].color = col;
+  this->vertices[p_face->vert_offset + 2].color = col;
+  this->vertices[p_face->vert_offset + 3].color = col;
 }
 
 }

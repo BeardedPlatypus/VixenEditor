@@ -9,7 +9,7 @@
 #include "Node.h"
 #include "OptionalNode.h"
 
-#include "include\world\util\Position.h"
+#include "VixLib\include\world\util\Position.h"
 
 namespace VixLib {
 namespace world {
@@ -25,7 +25,7 @@ namespace world {
 class IObjectRep {
 public:
   /// <summary> Destruct this IObjectRep </summary>
-  virtual ~IObjectRep() = 0;
+  virtual ~IObjectRep() {}
 
   /// <summary> Attempt to query the Node at the <paramref name='pos'/> </summary>
   /// <param name='pos'> The position to retrieve the node from </param>

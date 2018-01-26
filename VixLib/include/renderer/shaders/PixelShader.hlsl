@@ -32,9 +32,9 @@ float4 main(PixelShaderInput input) : SV_TARGET{
   float back_angular_incidence = calcCosAngularIncidence(float3(0.0f, 2.5f, 9.33f), 
                                                          surface_pos,
                                                          input.normal);
-  float light_val = 0.075 +                           // ambient term
-                    0.650 * key_angular_incidence +   // key light
-                    0.350 * fill_angular_incidence; + // fill light
+  float light_val = 0.200 +                           // ambient term
+                    0.600 * key_angular_incidence +   // key light
+                    0.300 * fill_angular_incidence; + // fill light
                     0.250 * back_angular_incidence;   // backlight
                     
   float3 col = input.color * light_val;

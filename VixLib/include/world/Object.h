@@ -8,13 +8,13 @@
 // ----------------------------------------------------------------------------
 #include "pch.h"
 
-#include "include\world\util\Position.h"
+#include "VixLib\include\world\util\Position.h"
 
-#include "./object-rep/Node.h"
-#include "./object-rep/OptionalNode.h"
+#include ".\object-rep\Node.h"
+#include ".\object-rep\OptionalNode.h"
 
-#include "./object-rep/IObjectRep.h"
-#include "./object-view/IObjectView.h"
+#include ".\object-rep\IObjectRep.h"
+#include ".\object-view\IObjectView.h"
 
 
 namespace VixLib {
@@ -34,8 +34,10 @@ public:
   // --------------------------------------------------------------------------
   //  Constructor | Destructor
   // --------------------------------------------------------------------------
-  /// <summary> Construct a new Object. </summary>
+  /// <summary> Construct a new empty Object. </summary>
   Object();
+  /// <summary> Construct a new Object with voxels at the given positions. </summary>
+  Object(const std::vector<std::pair<Position, DirectX::XMFLOAT3>>& nodes);
   /// <summary> Destruct this Object. </summary>
   ~Object();
 
@@ -72,7 +74,7 @@ public:
   /// <summary>
   /// Get the view of this Object to be used within the Renderer.
   /// <summary>
-  void queryView() const;
+  const IObjectViewRead& queryView() const { return *(this->m_obj_view); }
 
 private:
   /// <summary> The IObjectRep of this Object. </summary>

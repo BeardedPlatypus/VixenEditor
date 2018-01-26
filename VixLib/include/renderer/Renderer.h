@@ -3,6 +3,7 @@
 #include "VixCommon\include\DeviceResources.h"
 #include "VixLib\include\camera\Camera.h"
 #include "shaders\ShaderStructures.h"
+#include "VixLib\include\world\Object.h"
 
 
 namespace VixLib {
@@ -40,6 +41,8 @@ private:
   const camera::CameraData& m_camera_data;
 
   bool m_loading_complete;
+
+  std::unique_ptr<world::Object> m_object;
 };
 
 

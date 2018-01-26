@@ -16,7 +16,7 @@ public:
   //  Constructor
   // --------------------------------------------------------------------------
   NaiveObjectView();
-  ~NaiveObjectView();
+  virtual ~NaiveObjectView() override;
 
   // --------------------------------------------------------------------------
   //  Getters
@@ -30,6 +30,7 @@ public:
   virtual void addFace(Position pos, Direction dir, DirectX::XMFLOAT3 col) override;
   virtual void removeFace(Position pos, Direction dir) override;
 
+  virtual void setColour(Position pos, Direction dir, DirectX::XMFLOAT3 col);
 
 private:
   std::vector<graphics::VertexPositionNormalColor> vertices;
